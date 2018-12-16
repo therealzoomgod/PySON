@@ -150,6 +150,7 @@ class PySON(object):
 
         ordered = self.__my_property_names
         ordered.sort()
+
         for i in range(0, len(ordered)):
             k = ordered[i]
             v = self.__dict__[k]
@@ -215,7 +216,7 @@ class PySON(object):
     def _type(self, v, k = ""):
         t = type(v)
         if not t in self.__my_supported_types:
-            raise PySONException("Unsupported type %s (%s-%s)" % (t, `k`, `v`))
+            raise PySONException("Unsupported type %s (Key='%s' : %s)" % (t, `k`, `v`))
         return t
 
     def __load(self, d):
