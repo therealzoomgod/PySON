@@ -1,16 +1,8 @@
-# PySON
-Simple class to convert a JSON string or Python dictionary into relational classes
-
-I wrote this for personal use to deal with a rather large JSON string and it worked well.  That said I did not write it to follow any specification.
-
-
-Help on module pyson:
-
 NAME
     pyson
 
 FILE
-    g:\scripts\pyson\pyson.py
+    pyson.py
 
 DESCRIPTION
     PySON:   Simple easy to use class to convert JSON string
@@ -19,11 +11,16 @@ DESCRIPTION
              
     Date:    12-15-2018
     By:      zoomgod
-    Version: 0.0001 serious alphaware
+    Version: 1.3
     
     Contact me:
     Unknown Cheats: https://www.unknowncheats.me/forum/members/146787.html
     GitHub: https://github.com/therealzoomgod
+    
+    Changelog:
+    12-15-2018 Initial commit, parsing support only
+    
+    12-26-2018 Added support for building new JSON objects
 
 CLASSES
     __builtin__.object
@@ -36,6 +33,8 @@ CLASSES
      |  
      |  Methods
      |  -------
+     |  addClass    Create a PySON class member, raises exception if name in use
+     |  addMember   Create a new member, raises exception if name in use
      |  setValue    Set a value, raise exception if strict type checking is enabled
      |  getValue    Returns value or None
      |  getNames    Returns a list of member names
@@ -48,7 +47,7 @@ CLASSES
      |  
      |  Methods defined here:
      |  
-     |  __init__(self, schema, parent=None, name='')
+     |  __init__(self, schema={}, parent=None, name='')
      |      Args:
      |      -----------
      |      schema : JSON string or Python dict
@@ -56,6 +55,12 @@ CLASSES
      |      name   : Key name this instance represents, used internally
      |  
      |  __repr__(self)
+     |  
+     |  addClass(self, name)
+     |      Adds a new PySON member
+     |  
+     |  addMember(self, name, value)
+     |      Adds a new member of a supported non PySON type
      |  
      |  dump(self, logger=<idlelib.PyShell.PseudoOutputFile object>)
      |      Create a dump of full path name and value for this and all child instances.

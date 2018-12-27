@@ -5,11 +5,16 @@ PySON:   Simple easy to use class to convert JSON string
          
 Date:    12-15-2018
 By:      zoomgod
-Version: 0.0001 serious alphaware
+Version: 1.3
 
 Contact me:
 Unknown Cheats: https://www.unknowncheats.me/forum/members/146787.html
 GitHub: https://github.com/therealzoomgod
+
+Changelog:
+12-15-2018 Initial commit, parsing support only
+
+12-26-2018 Added support for building new JSON objects
 """
 
 import sys, json
@@ -34,6 +39,8 @@ class PySON(object):
 
     Methods
     -------
+    addClass    Create a PySON class member, raises exception if name in use
+    addMember   Create a new member, raises exception if name in use
     setValue    Set a value, raise exception if strict type checking is enabled
     getValue    Returns value or None
     getNames    Returns a list of member names
@@ -45,7 +52,7 @@ class PySON(object):
     toDict      Returns a dict object reflecting current values including child members.
     """
 
-    def __init__(self, schema, parent = None, name = ""):
+    def __init__(self, schema = {}, parent = None, name = ""):
         """
         Args:
         -----------
@@ -96,6 +103,46 @@ class PySON(object):
         #
         self.__load(schema)
 
+    def addClass(self, name):
+        """Adds a new PySON member"""
+        
+        if not type(name) is StringType:
+            raise PySONException("Member name must be a string.")
+
+        t = self.__my_property_types.get(name, None)
+        
+        if t != None:
+            raise PySONException("Class member %s already exists." % name)
+
+        self.__my_property_names.append(name)
+        self.__my_property_types[name] = self.__my_type
+
+        self.__dict__[name] = PySON({}, self, name)
+
+        return self.__dict__[name]
+    
+    def addMember(self, name, value):
+        """Adds a new member of a supported non PySON type"""
+        
+        t = self.__my_property_types.get(name, None)
+        tp = type(value)
+
+        if not type(name) is StringType:
+            raise PySONException("Member name must be a string.")
+        
+        if t != None:
+            raise PySONException("Class member %s already exists." % name)
+
+        if type(value) is self.__my_type:
+            raise PySONException("Use addClass to add a PySON member.")
+
+        if not type(value) in self.__my_supported_types:
+            raise PySONException("Unsupported type %s." % (`tp`))
+
+        self.__my_property_names.append(name)
+        self.__my_property_types[name] = self.__my_type
+        self.__dict__[name] = value
+        
     def setValue(self, name, value, strict = True):
         """Set a value, optionally enforce type checking"""
 
@@ -144,9 +191,15 @@ class PySON(object):
             elif t is ListType:
                 [ info(k, v[i], "[%i]" % i) for i in range(0, len(v)) ]
             elif t in [StringType, UnicodeType]:
-                logger.write('%s.%s%s = "%s"\n' % (self.__my_fqn, k, hint, v))
+                if self.__my_fqn:
+                    logger.write('%s.%s%s = "%s"\n' % (self.__my_fqn, k, hint, v))
+                else:
+                    logger.write('%s%s = "%s"\n' % (k, hint, v))
             else:
-                logger.write('%s.%s%s = %s\n' %  (self.__my_fqn, k, hint, v))
+                if self.__my_fqn:
+                    logger.write('%s.%s%s = %s\n' %  (self.__my_fqn, k, hint, v))
+                else:
+                    logger.write('%s%s = %s\n' %  (k, hint, v))
 
         ordered = self.__my_property_names
         ordered.sort()
